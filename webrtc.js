@@ -264,27 +264,23 @@ function setupLocalMedia(callback, errorback) {
     }
 
     navigator.mediaDevices
-        .getUserMedia({ audio: USE_AUDIO, video: USE_VIDEO })
-        .then((stream) => {
-			// 获取到媒体流后，禁用所有轨道
-			stream.getTracks().forEach((track) => {  
-                track.enabled = false;  
-            });  
-            localMediaStream = stream;
-            const localMedia = getVideoElement(App.peerId, true);
-            attachMediaStream(localMedia, stream);
-            resizeVideos();
-            if (callback) callback();
+		.getUserMedia({ audio: USE_AUDIO, video: USE_VIDEO })
+		.then((stream) => {
+			localMediaStream = stream;
+			const localMedia = getVideoElement(App.peerId, true);
+			attachMediaStream(localMedia, stream);
+			resizeVideos();
+			if (callback) callback();
 
-            navigator.mediaDevices.enumerateDevices().then((devices) => {
-                App.videoDevices = devices.filter((device) => device.kind === "videoinput" && device.deviceId !== "default");
-                App.audioDevices = devices.filter((device) => device.kind === "audioinput" && device.deviceId !== "default");
-            });
-        })
-        .catch(() => {
-			// 显示通知
-            showNotification("Camera/Microphone access denied or not found.");
-            if (errorback) errorback();
+			navigator.mediaDevices.enumerateDevices().then((devices) => {
+				App.videoDevices = devices.filter((device) => device.kind === "videoinput" && device.deviceId !== "default");
+				App.audioDevices = devices.filter((device) => device.kind === "audioinput" && device.deviceId !== "default");
+			});
+		})
+		.catch(() => {
+			/* user denied access to a/v */
+			alert("This site will not work without camera/microphone access.");
+			if (errorback) errorback();
         });
 }
 
